@@ -8,4 +8,5 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: echo "Workflow fixed successfully"
+      - name: Test Workflow
+        run: echo "AIO Linux workflow now updated correctly"
