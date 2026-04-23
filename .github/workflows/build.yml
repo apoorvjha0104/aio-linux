@@ -1,4 +1,4 @@
-name: Build AIO Linux ISO
+name: Build AIO Linux Base
 
 on:
   workflow_dispatch:
@@ -8,5 +8,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test Workflow
-        run: echo "AIO Linux workflow now updated correctly"
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Update System
+        run: sudo apt update
+
+      - name: Install Tools
+        run: sudo apt install -y debootstrap tar gzip
+
+      - name: Create AIO Linux RootFS
+        run: |
+          sudo mkdir aio-rootfs
+          sudo debootstrap noble aio-rootfs http://archive.ubuntu.com/ubuntu/
+
+      - name: Add AIO Branding
+        run: |
+          echo "AIO Linux" | sudo tee aio-rootfs/etc/hostname
+
+      - name: Compress Base System
+        run: |
+          sudo tar -czf aio-linux-base.tar.gz aio-rootfs
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aio-linux-base
+          path: aio-linux-base.tar.gz
